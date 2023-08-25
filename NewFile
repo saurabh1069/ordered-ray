@@ -1,0 +1,26 @@
+# Read the content of the file
+$fileContent = Get-Content -Path "C:\path\to\data.txt"
+
+# Create an empty array to store the objects
+$objectArray = @()
+$currentObject = [ordered]@{}
+
+foreach ($line in $fileContent) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        if ($currentObject.Count -gt 0) {
+            $objectArray += [PSCustomObject]$currentObject
+            $currentObject = [ordered]@{}
+        }
+    } else {
+        $key, $value = $line -split ":", 2
+        $currentObject[$key.Trim()] = $value.Trim()
+    }
+}
+
+# Add the last object if not followed by a blank line
+if ($currentObject.Count -gt 0) {
+    $objectArray += [PSCustomObject]$currentObject
+}
+
+# Display the resulting object array
+$objectArray
